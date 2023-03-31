@@ -1,0 +1,42 @@
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 3000;
+
+app.use(express.json());
+
+app.post('/bfhl', (req, res) => {
+  try {
+    const { userId, email, collegeRollNumber, array } = req.body;
+
+    // filter even numbers
+    const evenArray = array.filter(num => num % 2 === 0);
+
+    // filter odd numbers
+    const oddArray = array.filter(num => num % 2 !== 0);
+
+    // filter alphabets
+    const alphabetArray = array.filter(char => /^[a-zA-Z]$/.test(char)).map(char => char.toUpperCase());
+
+    res.json({
+      user_id: `${userId.replace(' ', '_')}_${new Date().toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '')}`,
+      is_success: true,
+      status: 'success',
+      email,
+      collegeRollNumber,
+      evenArray,
+      oddArray,
+      alphabetArray
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      is_success: false,
+      status: 'error',
+      message: 'Something went wrong'
+    });
+  }
+});
+
+app.listen(port, () => {
+  console.log(`Server listening at http://localhost:${port}`);
+});
